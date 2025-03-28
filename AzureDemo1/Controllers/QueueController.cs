@@ -1,6 +1,8 @@
 ﻿using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
 using AzureDemo1.Model;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using System.Text.Json;
 
 namespace AzureDemo1.Controllers
@@ -26,8 +28,11 @@ namespace AzureDemo1.Controllers
             {
                 // Use the injected _queueClient directly
                 await _queueClient.CreateIfNotExistsAsync(); // Still good practice
-                string messageBody = JsonSerializer.Serialize(queueMessageModel);
-                var sendReceipt = await _queueClient.SendMessageAsync(messageBody);
+                string messageBody = JsonSerializer.Serialize(queueMessageModel); 
+                //string messageBody = JsonSerializer.Serialize("Test API");
+                var bytes = Encoding.UTF8.GetBytes(messageBody);
+                var sendReceipt = await _queueClient.SendMessageAsync(Convert.ToBase64String(bytes));
+                //var sendReceipt = await _queueClient.SendMessageAsync(messageBody);
                 Console.WriteLine(sendReceipt.Value.MessageId); 
                 return Accepted(new { MessageId = sendReceipt.Value.MessageId.ToString() });
             }
