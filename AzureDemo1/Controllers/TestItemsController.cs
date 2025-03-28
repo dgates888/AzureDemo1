@@ -1,25 +1,21 @@
 ﻿using AzureDemo1.Model;
 using AzureDemo1.repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
-
+using Microsoft.EntityFrameworkCore; 
 namespace AzureDemo1.Controllers
-{
-    // Example in a Controller
+{ 
     [ApiController]
     [Route("api/[controller]")]
     public class TestItemsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-
-        // DbContext is injected here by the DI container
+         
         public TestItemsController(ApplicationDbContext context)
         {
             _context = context;
         }
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TestItem))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TestItem>> GetTestItemById(int id)
         {
@@ -33,10 +29,9 @@ namespace AzureDemo1.Controllers
             return Ok(testItem);
         }
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<TestItem>))]
         public async Task<ActionResult<IEnumerable<TestItem>>> GetTestItems()
-        {
-            // Use the injected context to query the database
+        { 
             return await _context.TestItems.ToListAsync();
         }
         [HttpPut]
